@@ -26,17 +26,28 @@ class HashTable:
         for digit in str(abs(key)):
             total += int(digit)
         return total % self.capacity
+
+    def probe_index(self, start, i):
+        if self.method == "linear":
+            return (start + i) % self.capacity
+        if self.method == "quadratic":
+            return (start + i * i) % self.capacity
+        raise NotImplementedError(f"{self.method} is not called yet")
     
     def insert(self, key):
         if self.search(key) is not None:
             print(f"{key} is already in the table.")
             return False
-        if self.count >= self.capacity:
+        if self.method == "quadratic":
+            if (self.count + 1) / self.capacity > 0.50:
+                print(f" limit  of 0.50 reached.")
+                return False
+        elif self.count >= self.capacity:
             print(f"Table is full.")
             return False
         start = self.hash_key(key)
         for i in range(self.capacity):
-            index = (start + i) % self.capacity
+            index = self.probe_index(start, i)
             if self.table[index] is None:
                 self.table[index] = key
                 self.count += 1
@@ -46,7 +57,7 @@ class HashTable:
     def search(self, key):
         start = self.hash_key(key)
         for i in range(self.capacity):
-            index = (start + i) % self.capacity
+            index = self.probe_index(start, i)
             if self.table[index] is None:
                 return None
             if self.table[index] == key:
@@ -64,14 +75,26 @@ class HashTable:
             print(i, ":", self.table[i])
 
 
-ht = HashTable("linear", "mod")
+#ht = HashTable("linear", "mod")
+#ht.insert(10)
+#ht.insert(21)
+#ht.insert(32)
+#ht.insert(43)
+#ht.insert(54)
+#ht.show()
+#print(ht.search(32))
+#print(ht.search(999))
+#ht.insert(21)
+#print(ht.count)
+ht = HashTable("quadratic", "mod")
 ht.insert(10)
 ht.insert(21)
 ht.insert(32)
 ht.insert(43)
 ht.insert(54)
 ht.show()
+print(ht.search(10))
+print(ht.search(21))
 print(ht.search(32))
-print(ht.search(999))
-ht.insert(21)
-print(ht.count)
+print(ht.search(43))
+print(ht.search(54))
