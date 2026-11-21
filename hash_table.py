@@ -26,36 +26,34 @@ class HashTable:
         for digit in str(abs(key)):
             total += int(digit)
         return total % self.capacity
-
+    
     def insert(self, key):
-        # TODO 1: Do not insert a duplicate. Use search() to check.
-        # TODO 2: Check whether one more key would exceed the limit:
-        #         linear: 0.70, quadratic: 0.50, chaining: 0.75.
-        #         If so, call resize() BEFORE inserting the new key.
-        #         Do this only after completing Milestone 4.
-        # TODO 3: Use hash_key(key) to find the starting position.
-        #         linear: try (start + i) % capacity
-        #         quadratic: try (start + i*i) % capacity
-        #         chaining: append to the list at the start position
-        # TODO 4: Increase count after inserting successfully.
-        pass
+        if self.search(key) is not None:
+            print(f"{key} is already in the table.")
+            return False
+        if self.count >= self.capacity:
+            print(f"Table is full.")
+            return False
+        start = self.hash_key(key)
+        for i in range(self.capacity):
+            index = (start + i) % self.capacity
+            if self.table[index] is None:
+                self.table[index] = key
+                self.count += 1
+                return True
+        return False
 
     def search(self, key):
-        # TODO: Return True if key is stored, and False otherwise.
-        # Use the same positions as insert() for each method.
-        # In open addressing, stop at an empty position or after
-        # capacity attempts. No deletion is required.
-        pass
+        start = self.hash_key(key)
+        for i in range(self.capacity):
+            index = (start + i) % self.capacity
+            if self.table[index] is None:
+                return None
+            if self.table[index] == key:
+                return index
+        return None
 
     def resize(self):
-        # TODO (Milestone 4):
-        # 1. Save your old table.
-        # 2. Change capacity to the next value in SIZES.
-        # 3. Make a new empty table of the correct kind.
-        # 4. Set count to 0.
-        # 5. Insert each old value again using insert().
-        #    For chaining, remember each position is a LIST.
-        # Do not just copy old values into the same positions.
         pass
 
     def show(self):
@@ -64,3 +62,16 @@ class HashTable:
         print("Load factor:", round(self.count / self.capacity, 2))
         for i in range(self.capacity):
             print(i, ":", self.table[i])
+
+
+ht = HashTable("linear", "mod")
+ht.insert(10)
+ht.insert(21)
+ht.insert(32)
+ht.insert(43)
+ht.insert(54)
+ht.show()
+print(ht.search(32))
+print(ht.search(999))
+ht.insert(21)
+print(ht.count)
