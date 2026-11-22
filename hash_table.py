@@ -38,14 +38,18 @@ class HashTable:
         if self.search(key) is not None:
             print(f"{key} is already in the table.")
             return False
+        start = self.hash_key(key)
+        if self.method == "chaining":
+            self.table[start].append(key)
+            self.count += 1
+            return True
         if self.method == "quadratic":
             if (self.count + 1) / self.capacity > 0.50:
-                print(f" limit  of 0.50 reached.")
+                print("limit of 0.50 reached.")
                 return False
         elif self.count >= self.capacity:
-            print(f"Table is full.")
+            print("Table is full.")
             return False
-        start = self.hash_key(key)
         for i in range(self.capacity):
             index = self.probe_index(start, i)
             if self.table[index] is None:
@@ -56,6 +60,10 @@ class HashTable:
 
     def search(self, key):
         start = self.hash_key(key)
+        if self.method == "chaining":
+            if key in self.table[start]:
+                return start
+            return None
         for i in range(self.capacity):
             index = self.probe_index(start, i)
             if self.table[index] is None:
@@ -86,15 +94,31 @@ class HashTable:
 #print(ht.search(999))
 #ht.insert(21)
 #print(ht.count)
-ht = HashTable("quadratic", "mod")
+
+#ht = HashTable("quadratic", "mod")
+#ht.insert(10)
+#ht.insert(21)
+#ht.insert(32)
+#ht.insert(43)
+#ht.insert(54)
+#ht.show()
+#print(ht.search(10))
+#print(ht.search(21))
+#print(ht.search(32))
+#print(ht.search(43))
+#print(ht.search(54))
+
+ht = HashTable("chaining", "mod")
 ht.insert(10)
 ht.insert(21)
 ht.insert(32)
 ht.insert(43)
 ht.insert(54)
 ht.show()
-print(ht.search(10))
-print(ht.search(21))
-print(ht.search(32))
-print(ht.search(43))
-print(ht.search(54))
+
+ht2 = HashTable("chaining", "digit")
+ht2.insert(10)
+ht2.insert(100)
+ht2.insert(1000)
+ht2.insert(10000)
+ht2.show()
