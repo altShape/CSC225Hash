@@ -1,0 +1,1 @@
+You can't copy values into the same positions because the table's size changes when it grows, so the mod changes too. A key's index comes from the hash function, so the same key ends up at a different index in the bigger table.

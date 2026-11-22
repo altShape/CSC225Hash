@@ -34,28 +34,33 @@ class HashTable:
             return (start + i * i) % self.capacity
         raise NotImplementedError(f"{self.method} is not called yet")
     
+    def max_load(self):
+        if self.method == "linear":
+            return 0.70
+        if self.method == "quadratic":
+            return 0.50
+        return 0.75
+
     def insert(self, key):
         if self.search(key) is not None:
             print(f"{key} is already in the table.")
             return False
+        if (self.count + 1) / self.capacity > self.max_load():
+            if not self.resize():
+                print("Table is at max capacity")
+                return False
         start = self.hash_key(key)
         if self.method == "chaining":
             self.table[start].append(key)
             self.count += 1
             return True
-        if self.method == "quadratic":
-            if (self.count + 1) / self.capacity > 0.50:
-                print("limit of 0.50 reached.")
-                return False
-        elif self.count >= self.capacity:
-            print("Table is full.")
-            return False
         for i in range(self.capacity):
             index = self.probe_index(start, i)
             if self.table[index] is None:
                 self.table[index] = key
                 self.count += 1
                 return True
+        print(f"No free slot for {key}.")
         return False
 
     def search(self, key):
@@ -73,7 +78,23 @@ class HashTable:
         return None
 
     def resize(self):
-        pass
+        position = SIZES.index(self.capacity)
+        if position + 1 >= len(SIZES):
+            return False
+        old_table = self.table
+        self.capacity = SIZES[position + 1]
+        if self.method == "chaining":
+            self.table = [[] for i in range(self.capacity)]
+        else:
+            self.table = [None] * self.capacity
+        self.count = 0
+        for slot in old_table:
+            if self.method == "chaining":
+                for key in slot:
+                    self.insert(key)
+            elif slot is not None:
+                self.insert(slot)
+        return True
 
     def show(self):
         print("\nMethod:", self.method, "| Hash:", self.hash_method)
@@ -108,17 +129,26 @@ class HashTable:
 #print(ht.search(43))
 #print(ht.search(54))
 
-ht = HashTable("chaining", "mod")
-ht.insert(10)
-ht.insert(21)
-ht.insert(32)
-ht.insert(43)
-ht.insert(54)
-ht.show()
+#ht = HashTable("chaining", "mod")
+#ht.insert(10)
+#ht.insert(21)
+#ht.insert(32)
+#ht.insert(43)
+#ht.insert(54)
+#ht.show()
 
-ht2 = HashTable("chaining", "digit")
-ht2.insert(10)
-ht2.insert(100)
-ht2.insert(1000)
-ht2.insert(10000)
-ht2.show()
+#ht2 = HashTable("chaining", "digit")
+#ht2.insert(10)
+#ht2.insert(100)
+#ht2.insert(1000)
+#ht2.insert(10000)
+#ht2.show()
+
+ht = HashTable("linear", "mod")
+for k in [15, 26, 37, 48, 59, 70, 81, 92]:
+    ht.insert(k)
+ht.show()
+for k in [15, 26, 37, 48, 59, 70, 81, 92]:
+    print(ht.search(k))
+print(ht.search(999))
+ht.insert(15)
